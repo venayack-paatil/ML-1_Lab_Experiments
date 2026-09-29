@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Iris Flower Species Predictor</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+      background: #eef5ff;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 480px;
+      padding: 35px;
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    h1 {
+      color: #1565c0;
+      text-align: center;
+    }
+
+    h3 {
+      margin: 8px 0 25px;
+      color: #555;
+      text-align: center;
+    }
+
+    label {
+      display: block;
+      margin: 12px 0 6px;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 25px;
+      padding: 13px;
+      border: 0;
+      border-radius: 8px;
+      background: #1565c0;
+      color: #fff;
+      font-size: 18px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #0d47a1;
+    }
+
+    .result {
+      margin-top: 25px;
+      padding: 18px;
+      border-radius: 8px;
+      background: #e8f5e9;
+      color: #2e7d32;
+      text-align: center;
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    footer {
+      margin-top: 20px;
+      color: #777;
+      text-align: center;
+      font-size: 13px;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="container">
+    <h1>Iris Flower Predictor</h1>
+    <h3>Multiclass Classification using Logistic Regression</h3>
+
+    <form action="/predict" method="POST">
+      <label for="sepal_length">Sepal Length (cm)</label>
+      <input
+        id="sepal_length"
+        type="number"
+        name="sepal_length"
+        min="4.3"
+        max="7.9"
+        step="0.1"
+        placeholder="Enter 4.3 to 7.9 cm"
+        required
+      >
+
+      <label for="sepal_width">Sepal Width (cm)</label>
+      <input
+        id="sepal_width"
+        type="number"
+        name="sepal_width"
+        min="2.0"
+        max="4.4"
+        step="0.1"
+        placeholder="Enter 2.0 to 4.4 cm"
+        required
+      >
+
+      <label for="petal_length">Petal Length (cm)</label>
+      <input
+        id="petal_length"
+        type="number"
+        name="petal_length"
+        min="1.0"
+        max="6.9"
+        step="0.1"
+        placeholder="Enter 1.0 to 6.9 cm"
+        required
+      >
+
+      <label for="petal_width">Petal Width (cm)</label>
+      <input
+        id="petal_width"
+        type="number"
+        name="petal_width"
+        min="0.1"
+        max="2.5"
+        step="0.1"
+        placeholder="Enter 0.1 to 2.5 cm"
+        required
+      >
+
+      <button type="submit">Predict Flower Species</button>
+    </form>
+
+    
+      <div class="result" role="status">
+        {{ prediction_text }}
+      </div>
+    
+
+    <footer>By Vinayak Patil</footer>
+  </main>
+</body>
+</html>
