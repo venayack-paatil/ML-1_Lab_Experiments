@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Banknote Authentication</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      padding: 24px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #eef5ff;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 460px;
+      padding: 30px;
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      color: #1565c0;
+      text-align: center;
+    }
+
+    p {
+      margin: 0 0 22px;
+      color: #666;
+      text-align: center;
+    }
+
+    label {
+      display: block;
+      margin: 14px 0 6px;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 11px;
+      border: 1px solid #bbb;
+      border-radius: 7px;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 22px;
+      padding: 13px;
+      border: 0;
+      border-radius: 7px;
+      background: #1565c0;
+      color: #fff;
+      font-size: 17px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #0d47a1;
+    }
+
+    .result,
+    .error {
+      margin-top: 20px;
+      padding: 14px;
+      border-radius: 7px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .result {
+      background: #e8f5e9;
+      color: #256029;
+    }
+
+    .error {
+      background: #ffebee;
+      color: #b71c1c;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="container">
+    <h1>Banknote Authentication</h1>
+    <p>Binary classification with Logistic Regression</p>
+
+    <form action="/predict" method="POST">
+      <label for="variance">Variance</label>
+      <input
+        id="variance"
+        type="number"
+        name="variance"
+        step="any"
+        placeholder="Example: 3.6216"
+        required
+      >
+
+      <label for="skewness">Skewness</label>
+      <input
+        id="skewness"
+        type="number"
+        name="skewness"
+        step="any"
+        placeholder="Example: 8.6661"
+        required
+      >
+
+      <label for="curtosis">Curtosis</label>
+      <input
+        id="curtosis"
+        type="number"
+        name="curtosis"
+        step="any"
+        placeholder="Example: -2.8073"
+        required
+      >
+
+      <label for="entropy">Entropy</label>
+      <input
+        id="entropy"
+        type="number"
+        name="entropy"
+        step="any"
+        placeholder="Example: -0.44699"
+        required
+      >
+
+      <button type="submit">Predict Class</button>
+    </form>
+
+    {% if prediction_text %}
+      <div class="result" role="status">{{ prediction_text }}</div>
+    {% endif %}
+
+    {% if error_text %}
+      <div class="error" role="alert">{{ error_text }}</div>
+    {% endif %}
+  </main>
+</body>
+</html>
