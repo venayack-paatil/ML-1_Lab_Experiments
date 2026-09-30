@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Breast Cancer KNN Classifier</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 24px;
+      background: #f2f6fc;
+      color: #222;
+    }
+
+    main {
+      width: 100%;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 30px;
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 8px 24px #0002;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      color: #1565c0;
+      text-align: center;
+    }
+
+    .subtitle {
+      margin: 0 0 22px;
+      color: #666;
+      text-align: center;
+    }
+
+    .notice {
+      margin-bottom: 20px;
+      padding: 12px;
+      border-radius: 7px;
+      background: #fff8e1;
+      color: #6d5600;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0 16px;
+    }
+
+    label {
+      display: block;
+      margin: 10px 0 5px;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 9px;
+      border: 1px solid #bbb;
+      border-radius: 7px;
+      font-size: 14px;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 24px;
+      padding: 13px;
+      border: 0;
+      border-radius: 8px;
+      background: #1565c0;
+      color: #fff;
+      font-size: 17px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #0d47a1;
+    }
+
+    .result,
+    .error {
+      margin-top: 20px;
+      padding: 14px;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .result {
+      background: #e8f5e9;
+      color: #256029;
+    }
+
+    .error {
+      background: #ffebee;
+      color: #b71c1c;
+    }
+
+    @media (max-width: 760px) {
+      main {
+        padding: 20px;
+      }
+
+      .grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 480px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <h1>Breast Cancer Classifier</h1>
+    <p class="subtitle">K-Nearest Neighbors · k = 5</p>
+
+    <div class="notice">
+      Educational dataset demonstration only; this is not a medical diagnosis.
+    </div>
+
+    <form action="/predict" method="post">
+      <div class="grid">
+        {% for feature in features %}
+          <div>
+            <label for="{{ feature }}">{{ feature }}</label>
+            <input
+              id="{{ feature }}"
+              name="{{ feature }}"
+              type="number"
+              step="any"
+              required
+            >
+          </div>
+        {% endfor %}
+      </div>
+
+      <button type="submit">Predict Class</button>
+    </form>
+
+    
+      <div class="result" role="status">
+        <strong>{{ prediction_text }}</strong><br>
+        {{ confidence_text }}
+      </div>
+    
+
+    
+      <div class="error" role="alert"></div>
+    
+  </main>
+</body>
+</html>
