@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wine Class Predictor</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 24px;
+      background: #f2f6fc;
+      color: #222;
+    }
+
+    main {
+      width: 100%;
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 30px;
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 8px 24px #0002;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      color: #7b1e3a;
+      text-align: center;
+    }
+
+    .subtitle {
+      margin: 0 0 24px;
+      color: #666;
+      text-align: center;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0 18px;
+    }
+
+    label {
+      display: block;
+      margin: 12px 0 6px;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #bbb;
+      border-radius: 7px;
+      font-size: 16px;
+    }
+
+    input:focus {
+      outline: 2px solid #7b1e3a;
+      outline-offset: 1px;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 24px;
+      padding: 13px;
+      border: 0;
+      border-radius: 8px;
+      background: #7b1e3a;
+      color: white;
+      font-size: 17px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #5a142a;
+    }
+
+    .result,
+    .error {
+      margin-top: 20px;
+      padding: 14px;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .result {
+      background: #e8f5e9;
+      color: #256029;
+    }
+
+    .error {
+      background: #ffebee;
+      color: #b71c1c;
+    }
+
+    @media (max-width: 560px) {
+      main {
+        padding: 22px;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <h1>Wine Class Predictor</h1>
+    <p class="subtitle">Multiclass Logistic Regression</p>
+
+    <form action="/predict" method="post">
+      <div class="grid">
+        <div>
+          <label for="Alcohol">Alcohol</label>
+          <input id="Alcohol" name="Alcohol" type="number" step="any" value="14.23" required>
+        </div>
+
+        <div>
+          <label for="Malic acid">Malic acid</label>
+          <input id="Malic acid" name="Malic acid" type="number" step="any" value="1.71" required>
+        </div>
+
+        <div>
+          <label for="Ash">Ash</label>
+          <input id="Ash" name="Ash" type="number" step="any" value="2.43" required>
+        </div>
+
+        <div>
+          <label for="Alcalinity of ash">Alcalinity of ash</label>
+          <input id="Alcalinity of ash" name="Alcalinity of ash" type="number" step="any" value="15.6" required>
+        </div>
+
+        <div>
+          <label for="Magnesium">Magnesium</label>
+          <input id="Magnesium" name="Magnesium" type="number" step="any" value="127" required>
+        </div>
+
+        <div>
+          <label for="Total phenols">Total phenols</label>
+          <input id="Total phenols" name="Total phenols" type="number" step="any" value="2.8" required>
+        </div>
+
+        <div>
+          <label for="Flavanoids">Flavanoids</label>
+          <input id="Flavanoids" name="Flavanoids" type="number" step="any" value="3.06" required>
+        </div>
+
+        <div>
+          <label for="Nonflavanoid phenols">Nonflavanoid phenols</label>
+          <input id="Nonflavanoid phenols" name="Nonflavanoid phenols" type="number" step="any" value="0.28" required>
+        </div>
+
+        <div>
+          <label for="Proanthocyanins">Proanthocyanins</label>
+          <input id="Proanthocyanins" name="Proanthocyanins" type="number" step="any" value="2.29" required>
+        </div>
+
+        <div>
+          <label for="Color intensity">Color intensity</label>
+          <input id="Color intensity" name="Color intensity" type="number" step="any" value="5.64" required>
+        </div>
+
+        <div>
+          <label for="Hue">Hue</label>
+          <input id="Hue" name="Hue" type="number" step="any" value="1.04" required>
+        </div>
+
+        <div>
+          <label for="OD280/OD315 of diluted wines">OD280/OD315 of diluted wines</label>
+          <input id="OD280/OD315 of diluted wines" name="OD280/OD315 of diluted wines" type="number" step="any" value="3.92" required>
+        </div>
+
+        <div>
+          <label for="Proline">Proline</label>
+          <input id="Proline" name="Proline" type="number" step="any" value="1065" required>
+        </div>
+      </div>
+
+      <button type="submit">Predict Wine Class</button>
+    </form>
+
+    
+      <div class="result" role="status">
+        <strong>{{ prediction_text }}</strong><br>
+        {{ confidence_text }}
+      </div>
+  
+
+    
+      <div class="error" role="alert">{{ error_text }}</div>
+    
+  </main>
+</body>
+</html>
