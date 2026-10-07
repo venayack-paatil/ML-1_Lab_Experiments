@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Message Classifier</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0; font-family: Arial, sans-serif;
+            background: #f4f7fb; color: #172033;
+        }
+        .container { max-width: 850px; margin: 60px auto; padding: 20px; }
+        .card {
+            background: white; padding: 35px; border-radius: 18px;
+            box-shadow: 0 8px 30px rgba(0,0,0,.08);
+        }
+        h1 { margin-top: 0; }
+        textarea {
+            width: 100%; min-height: 150px; padding: 15px;
+            border: 1px solid #ccd3df; border-radius: 10px;
+            font-size: 16px; resize: vertical;
+        }
+        button {
+            margin-top: 15px; padding: 12px 24px; border: 0;
+            border-radius: 9px; background: #2563eb; color: white;
+            font-size: 16px; cursor: pointer;
+        }
+        button:hover { background: #1d4ed8; }
+        .result {
+            margin-top: 25px; padding: 20px; border-radius: 12px;
+            background: #eef4ff; display: none;
+        }
+        .label { font-size: 26px; font-weight: bold; }
+        .error { color: #b91c1c; }
+        .examples { margin-top: 25px; }
+        .example {
+            display: inline-block; margin: 5px; padding: 8px 12px;
+            background: #eef2f7; border-radius: 8px; cursor: pointer;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="card">
+        <h1>🎓 College Message Classifier</h1>
+        <p>Enter a college message. The Naive Bayes model will classify it as
+           <b>Academic</b>, <b>Placement</b>, or <b>Promotional</b>.</p>
+
+        <textarea id="message" placeholder="Example: The placement cell has scheduled a coding assessment for Friday..."></textarea>
+        <button onclick="classifyMessage()">Classify Message</button>
+
+        <div id="result" class="result"></div>
+
+        <div class="examples">
+            <b>Try an example:</b><br>
+            <span class="example" onclick="useExample('The end semester examination timetable has been released.')">Exam timetable</span>
+            <span class="example" onclick="useExample('Students can apply for the software developer placement drive.')">Placement drive</span>
+            <span class="example" onclick="useExample('Get 20 percent off on stationery at the campus store.')">Campus offer</span>
+        </div>
+    </div>
+</div>
+
+<script>
+function useExample(text) {
+    document.getElementById("message").value = text;
+}
+
+async function classifyMessage() {
+    const message = document.getElementById("message").value.trim();
+    const result = document.getElementById("result");
+
+    if (!message) {
+        result.style.display = "block";
+        result.innerHTML = '<span class="error">Please enter a message.</span>';
+        return;
+    }
+
+    result.style.display = "block";
+    result.innerHTML = "Classifying...";
+
+    try {
+        const response = await fetch("/predict", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({message})
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            result.innerHTML = `<span class="error">${data.error}</span>`;
+            return;
+        }
+
+        result.innerHTML = `
+            <div>Prediction:</div>
+            <div class="label">${data.prediction}</div>
+            <div>Model confidence: ${data.confidence}%</div>
+        `;
+    } catch (error) {
+        result.innerHTML = '<span class="error">Could not connect to Flask server.</span>';
+    }
+}
+</script>
+</body>
+</html>
