@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>College Message Classifier</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #f7f7f7;
+            color: #222;
+        }
+
+        /* TOP HEADER */
+
+        .topbar {
+            height: 70px;
+            background: #b71c1c;
+            color: white;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 8%;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-icon {
+            width: 42px;
+            height: 42px;
+
+            background: #ffd600;
+            color: #b71c1c;
+
+            border-radius: 8px;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .brand-name {
+            font-size: 21px;
+            font-weight: bold;
+        }
+
+        .brand-subtitle {
+            font-size: 12px;
+            color: #ffe9e9;
+            margin-top: 2px;
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+
+            font-size: 13px;
+        }
+
+        .status-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: #ffd600;
+        }
+
+
+        /* MAIN */
+
+        .main {
+            width: 90%;
+            max-width: 1050px;
+
+            margin: 45px auto;
+        }
+
+
+        /* PAGE TITLE */
+
+        .page-title {
+            margin-bottom: 25px;
+        }
+
+        .page-title h1 {
+            font-size: 32px;
+            color: #333;
+            margin-bottom: 7px;
+        }
+
+        .page-title p {
+            color: #777;
+            font-size: 15px;
+        }
+
+
+        /* LAYOUT */
+
+        .content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+        }
+
+
+        /* CARD */
+
+        .card {
+            background: white;
+
+            border: 1px solid #e4e4e4;
+
+            border-radius: 10px;
+
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+
+            padding: 28px;
+        }
+
+
+        /* FORM */
+
+        .card-header {
+            border-bottom: 1px solid #eeeeee;
+            padding-bottom: 18px;
+            margin-bottom: 20px;
+        }
+
+        .card-header h2 {
+            font-size: 20px;
+            color: #b71c1c;
+        }
+
+        .card-header p {
+            font-size: 13px;
+            color: #777;
+            margin-top: 5px;
+        }
+
+        label {
+            display: block;
+
+            font-weight: bold;
+            font-size: 14px;
+
+            margin-bottom: 9px;
+
+            color: #444;
+        }
+
+        textarea {
+            width: 100%;
+            height: 180px;
+
+            resize: vertical;
+
+            padding: 15px;
+
+            border: 1px solid #ccc;
+
+            border-radius: 7px;
+
+            font-size: 15px;
+
+            line-height: 1.5;
+
+            outline: none;
+
+            color: #333;
+
+            background: #fff;
+        }
+
+        textarea:focus {
+            border-color: #b71c1c;
+
+            box-shadow: 0 0 0 2px rgba(183,28,28,0.08);
+        }
+
+        .textarea-footer {
+            display: flex;
+            justify-content: space-between;
+
+            margin-top: 7px;
+
+            font-size: 12px;
+
+            color: #888;
+        }
+
+
+        /* BUTTONS */
+
+        .button-row {
+            display: flex;
+            gap: 10px;
+
+            margin-top: 20px;
+        }
+
+        .classify-btn {
+            flex: 1;
+
+            background: #b71c1c;
+
+            color: white;
+
+            border: none;
+
+            padding: 14px;
+
+            border-radius: 6px;
+
+            font-size: 15px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+        }
+
+        .classify-btn:hover {
+            background: #8f1515;
+        }
+
+        .clear-btn {
+            background: #fff;
+
+            color: #b71c1c;
+
+            border: 1px solid #b71c1c;
+
+            padding: 14px 22px;
+
+            border-radius: 6px;
+
+            cursor: pointer;
+
+            font-size: 14px;
+
+            font-weight: bold;
+        }
+
+        .clear-btn:hover {
+            background: #fff5f5;
+        }
+
+
+        /* RESULT */
+
+        .result {
+            margin-top: 25px;
+
+            border-left: 5px solid #ffd600;
+
+            background: #fffbea;
+
+            padding: 20px;
+
+            border-radius: 6px;
+        }
+
+        .result-title {
+            color: #777;
+
+            font-size: 12px;
+
+            text-transform: uppercase;
+
+            font-weight: bold;
+
+            margin-bottom: 8px;
+        }
+
+        .prediction {
+            display: inline-block;
+
+            background: #b71c1c;
+
+            color: white;
+
+            padding: 8px 18px;
+
+            border-radius: 5px;
+
+            font-size: 20px;
+
+            font-weight: bold;
+        }
+
+        .result-text {
+            margin-top: 10px;
+
+            color: #555;
+
+            font-size: 13px;
+        }
+
+
+        /* RIGHT SIDE */
+
+        .info-box {
+            margin-bottom: 20px;
+        }
+
+        .info-title {
+            font-size: 17px;
+
+            font-weight: bold;
+
+            color: #b71c1c;
+
+            margin-bottom: 15px;
+
+            padding-bottom: 10px;
+
+            border-bottom: 2px solid #ffd600;
+        }
+
+        .feature {
+            display: flex;
+
+            gap: 12px;
+
+            padding: 12px 0;
+
+            border-bottom: 1px solid #eeeeee;
+        }
+
+        .feature:last-child {
+            border-bottom: none;
+        }
+
+        .feature-icon {
+            width: 34px;
+            height: 34px;
+
+            flex-shrink: 0;
+
+            background: #fff3cd;
+
+            color: #b71c1c;
+
+            border-radius: 6px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            font-size: 16px;
+        }
+
+        .feature-text h3 {
+            font-size: 14px;
+
+            color: #333;
+
+            margin-bottom: 3px;
+        }
+
+        .feature-text p {
+            font-size: 12px;
+
+            color: #777;
+
+            line-height: 1.4;
+        }
+
+
+        /* EXAMPLES */
+
+        .examples {
+            margin-top: 20px;
+        }
+
+        .example-btn {
+            width: 100%;
+
+            text-align: left;
+
+            padding: 11px 12px;
+
+            margin-bottom: 8px;
+
+            background: #fafafa;
+
+            border: 1px solid #ddd;
+
+            border-radius: 6px;
+
+            color: #444;
+
+            cursor: pointer;
+
+            font-size: 12px;
+
+            transition: 0.2s;
+        }
+
+        .example-btn:hover {
+            border-color: #b71c1c;
+
+            background: #fff7f7;
+        }
+
+
+        /* FOOTER */
+
+        footer {
+            margin-top: 40px;
+
+            border-top: 1px solid #ddd;
+
+            padding: 20px;
+
+            text-align: center;
+
+            color: #888;
+
+            font-size: 12px;
+        }
+
+        footer strong {
+            color: #b71c1c;
+        }
+
+
+        /* MOBILE */
+
+        @media(max-width: 800px) {
+
+            .topbar {
+                padding: 0 5%;
+            }
+
+            .status {
+                display: none;
+            }
+
+            .content {
+                grid-template-columns: 1fr;
+            }
+
+            .main {
+                margin-top: 30px;
+            }
+
+        }
+
+        @media(max-width: 500px) {
+
+            .brand-name {
+                font-size: 17px;
+            }
+
+            .brand-subtitle {
+                display: none;
+            }
+
+            .page-title h1 {
+                font-size: 25px;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .button-row {
+                flex-direction: column;
+            }
+
+            .clear-btn {
+                width: 100%;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- HEADER -->
+
+<header class="topbar">
+
+    <div class="brand">
+
+        <div class="brand-icon">
+            C
+        </div>
+
+        <div>
+
+            <div class="brand-name">
+                College Message Classifier
+            </div>
+
+            <div class="brand-subtitle">
+                Machine Learning Based Classification System
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="status">
+
+        <span class="status-dot"></span>
+
+        System Online
+
+    </div>
+
+</header>
+
+
+
+<!-- MAIN -->
+
+<main class="main">
+
+
+    <div class="page-title">
+
+        <h1>Message Classification</h1>
+
+        <p>
+            Enter a college-related message to identify its category using
+            a trained Naive Bayes machine learning model.
+        </p>
+
+    </div>
+
+
+
+    <div class="content">
+
+
+        <!-- LEFT CARD -->
+
+        <div class="card">
+
+            <div class="card-header">
+
+                <h2>Classify a Message</h2>
+
+                <p>
+                    Enter the message below and click classify.
+                </p>
+
+            </div>
+
+
+            <form method="POST" onsubmit="startLoading()">
+
+                <label for="message">
+                    College Message
+                </label>
+
+
+                <textarea
+                    id="message"
+                    name="message"
+                    placeholder="Enter your college message here..."
+                    required
+                >{{ message }}</textarea>
+
+
+                <div class="textarea-footer">
+
+                    <span>
+                        Example: Exam notification, placement notice, event announcement
+                    </span>
+
+                    <span id="counter">
+                        0 characters
+                    </span>
+
+                </div>
+
+
+                <div class="button-row">
+
+                    <button
+                        type="submit"
+                        class="classify-btn"
+                        id="classifyButton"
+                    >
+                        Classify Message
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="clear-btn"
+                        onclick="clearMessage()"
+                    >
+                        Clear
+                    </button>
+
+                </div>
+
+            </form>
+
+
+            {% if prediction %}
+
+            <div class="result">
+
+                <div class="result-title">
+                    Classification Result
+                </div>
+
+                <div class="prediction">
+                    {{ prediction }}
+                </div>
+
+                <div class="result-text">
+                    The machine learning model has classified the
+                    submitted college message.
+                </div>
+
+            </div>
+
+            {% endif %}
+
+
+        </div>
+
+
+
+        <!-- RIGHT CARD -->
+
+        <div>
+
+
+            <div class="card info-box">
+
+                <div class="info-title">
+                    About the System
+                </div>
+
+
+                <div class="feature">
+
+                    <div class="feature-icon">
+                        ML
+                    </div>
+
+                    <div class="feature-text">
+
+                        <h3>Machine Learning</h3>
+
+                        <p>
+                            Uses a trained Naive Bayes classifier
+                            to analyze messages.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="feature">
+
+                    <div class="feature-icon">
+                        TXT
+                    </div>
+
+                    <div class="feature-text">
+
+                        <h3>Text Analysis</h3>
+
+                        <p>
+                            Converts the entered message into
+                            numerical features.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="feature">
+
+                    <div class="feature-icon">
+                        AI
+                    </div>
+
+                    <div class="feature-text">
+
+                        <h3>Instant Prediction</h3>
+
+                        <p>
+                            The trained model provides a
+                            classification immediately.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- EXAMPLES -->
+
+            <div class="card examples">
+
+                <div class="info-title">
+                    Try Sample Messages
+                </div>
+
+
+                <button
+                    class="example-btn"
+                    onclick="useExample('The semester examination timetable has been released. Please check the college portal.')"
+                >
+                    📚 Exam Announcement
+                </button>
+
+
+                <button
+                    class="example-btn"
+                    onclick="useExample('Students selected for the campus placement drive should report to the seminar hall.')"
+                >
+                    💼 Placement Notice
+                </button>
+
+
+                <button
+                    class="example-btn"
+                    onclick="useExample('Students can submit their scholarship applications before Friday.')"
+                >
+                    🎓 Scholarship Notice
+                </button>
+
+
+                <button
+                    class="example-btn"
+                    onclick="useExample('The annual college cultural event will be conducted this Saturday.')"
+                >
+                    🎉 College Event
+                </button>
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+</main>
+
+
+
+<!-- FOOTER -->
+
+<footer>
+
+    College Message Classifier
+    &nbsp; | &nbsp;
+    Developed using <strong>Python + Flask + Machine Learning</strong>
+
+</footer>
+
+
+
+<script>
+
+
+    const textarea = document.getElementById("message");
+
+    const counter = document.getElementById("counter");
+
+
+    /* CHARACTER COUNTER */
+
+    function updateCounter() {
+
+        const count = textarea.value.length;
+
+        counter.innerText = count + " characters";
+
+    }
+
+
+    textarea.addEventListener(
+        "input",
+        updateCounter
+    );
+
+
+    updateCounter();
+
+
+
+    /* CLEAR */
+
+    function clearMessage() {
+
+        textarea.value = "";
+
+        updateCounter();
+
+        textarea.focus();
+
+    }
+
+
+
+    /* SAMPLE MESSAGE */
+
+    function useExample(text) {
+
+        textarea.value = text;
+
+        updateCounter();
+
+        textarea.focus();
+
+    }
+
+
+
+    /* LOADING */
+
+    function startLoading() {
+
+        const button =
+            document.getElementById("classifyButton");
+
+        button.innerText = "Classifying...";
+
+        button.disabled = true;
+
+    }
+
+</script>
+
+
+</body>
+
+</html>
