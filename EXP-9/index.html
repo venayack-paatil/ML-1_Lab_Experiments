@@ -1,0 +1,333 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Banknote Authentication | Linear SVM</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: linear-gradient(135deg, #eaf0ff, #f7f9fc);
+            color: #172033;
+            min-height: 100vh;
+            padding: 30px 16px;
+        }
+
+        .container {
+            max-width: 760px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .logo {
+            width: 65px;
+            height: 65px;
+            margin: 0 auto 15px;
+            display: grid;
+            place-items: center;
+            border-radius: 18px;
+            background: #173f7a;
+            color: white;
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        .eyebrow {
+            color: #315f9d;
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+        }
+
+        h1 {
+            font-size: clamp(25px, 5vw, 36px);
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #657086;
+            line-height: 1.6;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border: 1px solid #e0e6f0;
+            border-radius: 18px;
+            box-shadow: 0 12px 35px rgba(23, 32, 51, 0.08);
+        }
+
+        .card h2 {
+            font-size: 22px;
+            margin-bottom: 8px;
+        }
+
+        .help {
+            color: #657086;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .field label {
+            display: block;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .field input {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #cbd5e1;
+            border-radius: 9px;
+            font-size: 15px;
+            background: #fff;
+        }
+
+        .field input:focus {
+            outline: 2px solid #a9c8ff;
+            border-color: #315f9d;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 9px;
+            background: #173f7a;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: #24559a;
+        }
+
+        .result {
+            margin-top: 25px;
+            padding: 22px;
+            border-radius: 12px;
+            line-height: 1.6;
+        }
+
+        .result h2 {
+            margin: 6px 0;
+        }
+
+        .genuine {
+            background: #eaf8f0;
+            border: 1px solid #a7dfbd;
+            color: #17633b;
+        }
+
+        .counterfeit {
+            background: #fff0f0;
+            border: 1px solid #f0b4b4;
+            color: #a3222c;
+        }
+
+        .error {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 9px;
+            background: #fff6e5;
+            border: 1px solid #f0d28a;
+            color: #86530a;
+        }
+
+        .info {
+            margin-top: 22px;
+            padding: 25px;
+            background: white;
+            border: 1px solid #e0e6f0;
+            border-radius: 15px;
+            line-height: 1.7;
+        }
+
+        .info h3 {
+            margin-bottom: 8px;
+        }
+
+        .disclaimer {
+            color: #657086;
+            font-size: 13px;
+            margin-top: 12px;
+        }
+
+        footer {
+            text-align: center;
+            color: #657086;
+            font-size: 13px;
+            margin-top: 25px;
+        }
+
+        @media (max-width: 520px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card {
+                padding: 22px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="container">
+
+        <header>
+            <div class="logo">₹</div>
+
+            <p class="eyebrow">MACHINE LEARNING PROJECT</p>
+
+            <h1>Banknote Authentication</h1>
+
+            <p class="subtitle">
+                Counterfeit Banknote Detection using Linear SVM
+            </p>
+        </header>
+
+        <section class="card">
+            <h2>Analyze a Banknote Sample</h2>
+
+            <p class="help">
+                Enter the four numerical features extracted from the
+                banknote image. The trained Linear SVM model will
+                classify the sample.
+            </p>
+
+            <form action="/" method="POST">
+
+                <div class="form-grid">
+
+                    <div class="field">
+                        <label for="variance">Variance</label>
+                        <input
+                            type="number"
+                            step="any"
+                            id="variance"
+                            name="variance"
+                            placeholder="e.g. 3.6216"
+                            value="{{ values.variance }}"
+                            required
+                        >
+                    </div>
+
+                    <div class="field">
+                        <label for="skewness">Skewness</label>
+                        <input
+                            type="number"
+                            step="any"
+                            id="skewness"
+                            name="skewness"
+                            placeholder="e.g. 8.6661"
+                            value="{{ values.skewness }}"
+                            required
+                        >
+                    </div>
+
+                    <div class="field">
+                        <label for="curtosis">Curtosis</label>
+                        <input
+                            type="number"
+                            step="any"
+                            id="curtosis"
+                            name="curtosis"
+                            placeholder="e.g. -2.8073"
+                            value="{{ values.curtosis }}"
+                            required
+                        >
+                    </div>
+
+                    <div class="field">
+                        <label for="entropy">Entropy</label>
+                        <input
+                            type="number"
+                            step="any"
+                            id="entropy"
+                            name="entropy"
+                            placeholder="e.g. -0.44699"
+                            value="{{ values.entropy }}"
+                            required
+                        >
+                    </div>
+
+                </div>
+
+                <button type="submit">
+                    Classify Banknote
+                </button>
+
+            </form>
+
+            {% if error %}
+                <div class="error" role="alert">
+                    <strong>Input Error</strong>
+                    <p>{{ error }}</p>
+                </div>
+            {% endif %}
+
+            {% if prediction %}
+                <div
+                    class="result {{ prediction.class }}"
+                    role="status"
+                >
+                    <p>Classification Result</p>
+
+                    <h2>{{ prediction.label }}</h2>
+
+                    <p>{{ prediction.message }}</p>
+                </div>
+            {% endif %}
+
+        </section>
+
+        <section class="info">
+            <h3>How It Works</h3>
+
+            <p>
+                The application uses four image-derived numerical
+                features and a trained Linear Support Vector Machine
+                (SVM) classifier to predict the class of a banknote
+                sample.
+            </p>
+
+            <p class="disclaimer">
+                Educational demonstration only. This prediction is
+                not official verification of physical currency.
+            </p>
+        </section>
+
+        <footer>
+            Built with Python, Flask, HTML, CSS and Scikit-learn
+        </footer>
+
+    </main>
+</body>
+</html>
