@@ -1,0 +1,287 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dry Bean Classification | Non-Linear SVM</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: linear-gradient(135deg, #eef4ff, #f8fafc);
+            color: #172033;
+            min-height: 100vh;
+            padding: 30px 16px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            width: 68px;
+            height: 68px;
+            display: grid;
+            place-items: center;
+            margin: 0 auto 15px;
+            background: #285943;
+            color: white;
+            border-radius: 18px;
+            font-size: 34px;
+        }
+
+        .eyebrow {
+            color: #39775a;
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin-bottom: 9px;
+        }
+
+        h1 {
+            font-size: clamp(26px, 5vw, 38px);
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #657086;
+            line-height: 1.6;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #e1e8e3;
+            border-radius: 18px;
+            padding: 30px;
+            box-shadow: 0 12px 35px rgba(23, 32, 51, 0.06);
+        }
+
+        .card h2 {
+            margin-bottom: 8px;
+        }
+
+        .description {
+            color: #657086;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 20px;
+        }
+
+        .field label {
+            display: block;
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            overflow-wrap: anywhere;
+        }
+
+        .field input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccd7d0;
+            border-radius: 9px;
+            font-size: 14px;
+        }
+
+        .field input:focus {
+            outline: 2px solid #b4ddc3;
+            border-color: #39775a;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 28px;
+            padding: 15px;
+            border: none;
+            border-radius: 9px;
+            background: #285943;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: #1e4432;
+        }
+
+        .result {
+            margin-top: 25px;
+            padding: 22px;
+            border-radius: 12px;
+            background: #eaf8ef;
+            border: 1px solid #a7dfbd;
+            color: #17633b;
+            line-height: 1.6;
+        }
+
+        .result h2 {
+            margin: 7px 0;
+            font-size: 26px;
+        }
+
+        .error {
+            margin-top: 22px;
+            padding: 16px;
+            background: #fff6e5;
+            border: 1px solid #f0d28a;
+            color: #86530a;
+            border-radius: 9px;
+        }
+
+        .info {
+            background: white;
+            border: 1px solid #e1e8e3;
+            border-radius: 15px;
+            margin-top: 22px;
+            padding: 24px;
+            line-height: 1.7;
+        }
+
+        .info h3 {
+            margin-bottom: 8px;
+        }
+
+        .disclaimer {
+            color: #657086;
+            font-size: 13px;
+            margin-top: 10px;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 13px;
+            color: #657086;
+        }
+
+        @media (max-width: 760px) {
+            .form-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 480px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="container">
+
+        <header>
+            <div class="logo">🌱</div>
+
+            <p class="eyebrow">MACHINE LEARNING PROJECT</p>
+
+            <h1>Dry Bean Classification</h1>
+
+            <p class="subtitle">
+                Multiclass classification using a Non-Linear SVM
+                with an RBF kernel
+            </p>
+        </header>
+
+        <section class="card">
+            <h2>Enter Bean Measurements</h2>
+
+            <p class="description">
+                Enter all 16 numerical features measured from a dry bean
+                sample. The trained model will predict its variety.
+            </p>
+
+            <form action="/" method="POST">
+
+                <div class="form-grid">
+                    {% for feature in feature_names %}
+                    <div class="field">
+                        <label for="{{ feature }}">
+                            {{ feature.replace('_', ' ') | title }}
+                        </label>
+
+                        <input
+                            type="number"
+                            step="any"
+                            id="{{ feature }}"
+                            name="{{ feature }}"
+                            value="{{ values.get(feature, '') }}"
+                            placeholder="Enter {{ feature.replace('_', ' ') }}"
+                            required
+                        >
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <button type="submit">
+                    Predict Bean Variety
+                </button>
+
+            </form>
+
+            {% if error %}
+            <div class="error" role="alert">
+                <strong>Input Error</strong>
+                <p>{{ error }}</p>
+            </div>
+            {% endif %}
+
+            {% if prediction %}
+            <div class="result" role="status">
+                <p>Prediction Result</p>
+                <h2>{{ prediction.label }}</h2>
+                <p>{{ prediction.message }}</p>
+            </div>
+            {% endif %}
+        </section>
+
+        <section class="info">
+            <h3>About This Project</h3>
+
+            <p>
+                This application uses a Support Vector Machine with an
+                RBF kernel to classify dry beans into one of seven
+                varieties based on 16 numerical measurements.
+            </p>
+
+            <p class="disclaimer">
+                This is an educational machine learning demonstration.
+                Predictions depend on the quality and range of the
+                supplied measurements.
+            </p>
+        </section>
+
+        <footer>
+            Built with Python, Flask, HTML, CSS and Scikit-learn
+        </footer>
+
+    </main>
+</body>
+</html>
