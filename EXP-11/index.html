@@ -1,0 +1,245 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vehicle Price Predictor</title>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f3f4f6;
+  margin: 0;
+  padding: 30px 15px;
+  color: #222;
+}
+.container {
+  max-width: 650px;
+  margin: auto;
+  background: white;
+  padding: 25px;
+  border-radius: 14px;
+}
+h2 { margin-top: 0; }
+input, select, button {
+  width: 100%;
+  padding: 11px;
+  margin: 8px 0;
+  box-sizing: border-box;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+button {
+  background: #2563eb;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+.final-price {
+  background: #eff6ff;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  margin: 20px 0;
+}
+.final-price h1 { color: #15803d; margin: 10px 0; }
+.row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px;
+  margin: 8px 0;
+  background: #f8fafc;
+  border-radius: 6px;
+}
+.row span:last-child { font-weight: bold; text-align: right; }
+.bar {
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+.fill { height: 100%; background: #2563eb; }
+.note { color: #666; font-size: 13px; }
+#error { color: #b91c1c; }
+</style>
+</head>
+
+<body>
+<div class="container">
+  <h2>🚗 Vehicle Price Predictor</h2>
+  <p>Enter the vehicle details to estimate its price.</p>
+
+  <form id="form">
+    <label>Manufacturing Year</label>
+    <input type="number" name="year" min="1900" max="2100"
+           placeholder="2018" required>
+
+    <label>Odometer (miles)</label>
+    <input type="number" name="odometer" min="0"
+           placeholder="65000" required>
+
+    <label>Manufacturer</label>
+    <select name="manufacturer" required>
+      <option value="">Select manufacturer</option>
+      <option>toyota</option>
+      <option>ford</option>
+      <option>honda</option>
+      <option>bmw</option>
+      <option>chevrolet</option>
+      <option>hyundai</option>
+      <option>other</option>
+    </select>
+
+    <label>Fuel Type</label>
+    <select name="fuel">
+      <option value="">Unknown</option>
+      <option>gas</option>
+      <option>diesel</option>
+      <option>electric</option>
+      <option>hybrid</option>
+    </select>
+
+    <button type="submit" id="predictBtn">Predict Price</button>
+  </form>
+
+  <p id="error" role="alert"></p>
+  <div id="result" aria-live="polite"></div>
+</div>
+
+<script>
+const form = document.getElementById("form");
+const result = document.getElementById("result");
+const error = document.getElementById("error");
+const button = document.getElementById("predictBtn");
+
+const money = value => "$" + Number(value).toLocaleString("en-US", {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2
+});
+
+const pretty = text => text.replace(/_/g, " ")
+  .replace(/\b\w/g, c => c.toUpperCase());
+
+form.addEventListener("submit", async function(e) {
+  e.preventDefault();
+  error.textContent = "";
+  result.replaceChildren();
+  button.disabled = true;
+  button.textContent = "Predicting...";
+
+  try {
+    const response = await fetch("/predict", {
+      method: "POST",
+      body: new FormData(form),
+      headers: { Accept: "application/json" }
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Prediction failed");
+    }
+
+    const predictions = data.price_predictions || {};
+    const models = Object.entries(predictions)
+      .map(([name, value]) => [name, Number(value)])
+      .filter(([, value]) => Number.isFinite(value));
+
+    if (!models.length) {
+      throw new Error("No valid price predictions received.");
+    }
+
+    // Calculate the average predicted price.
+    const average = models.reduce((sum, [, price]) =>
+      sum + price, 0) / models.length;
+
+    let html = `
+      <div class="final-price">
+        <p>Estimated Vehicle Price</p>
+        <h1>${money(average)}</h1>
+        <p class="note">Average of ${models.length} regression model(s)</p>
+      </div>
+
+      <h3>Regression Model Comparison</h3>
+    `;
+
+    models.forEach(([name, price]) => {
+      html += `
+        <div class="row">
+          <span>${pretty(name)}</span>
+          <span>${money(price)}</span>
+        </div>
+      `;
+    });
+
+    // Regression metrics must come from held-out test data.
+    const metrics = data.regressor_metrics || {};
+    const metricEntries = Object.entries(metrics).filter(([, m]) =>
+      m && Number.isFinite(Number(m.r2)) &&
+      Number.isFinite(Number(m.mae))
+    );
+
+    if (metricEntries.length) {
+      html += "<h3>Model Performance</h3>";
+
+      metricEntries.forEach(([name, m]) => {
+        const r2 = Number(m.r2);
+        const mae = Number(m.mae);
+        const width = Math.max(0, Math.min(100, r2 * 100));
+
+        html += `
+          <div class="row">
+            <span>${pretty(name)}</span>
+            <span>R²: ${r2.toFixed(3)}<br>
+              MAE: ${money(mae)}</span>
+          </div>
+          <div class="bar">
+            <div class="fill" style="width:${width}%"></div>
+          </div>
+        `;
+      });
+
+      html += `<p class="note">
+        Higher R² and lower MAE generally indicate better test-set performance.
+      </p>`;
+    } else {
+      html += `<p class="note">
+        To compare model performance, return regressor_metrics from Flask
+        using R² and MAE calculated on held-out test data.
+      </p>`;
+    }
+
+    // Display classifier metrics only if the backend returns them.
+    const classifiers = data.classifier_metrics || {};
+    const classifierEntries = Object.entries(classifiers);
+
+    if (classifierEntries.length) {
+      html += "<h3>Classifier Comparison</h3>";
+
+      classifierEntries.forEach(([name, m]) => {
+        html += `
+          <div class="row">
+            <span>${pretty(name)}</span>
+            <span>Accuracy: ${(Number(m.accuracy) * 100).toFixed(1)}%<br>
+              Weighted F1: ${Number(m.weighted_f1).toFixed(3)}</span>
+          </div>
+        `;
+      });
+    }
+
+    result.innerHTML = html;
+
+  } catch (err) {
+    error.textContent = err.message || "Could not connect to Flask.";
+  } finally {
+    button.disabled = false;
+    button.textContent = "Predict Price";
+  }
+});
+</script>
+</body>
+</html>
